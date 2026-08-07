@@ -1341,10 +1341,43 @@
           <button class="studio-btn" onclick="showToast('Account details coming soon')">View</button>
         </div>
       </div>
+     <div class="setting-section">
+  <h3>Privacy & Data</h3>
 
+  <button
+    type="button"
+    class="clear-history-btn"
+    onclick="clearChatHistory()"
+  >
+    🗑️ Clear Chat History
+  </button>
+</div>
+<div class="confirm-modal" id="clearHistoryModal">
+  <div class="confirm-box">
+    <div class="confirm-icon">⚠️</div>
+
+    <h3>Clear Chat History?</h3>
+
+    <p>
+      Are you sure you want to delete all your recent chats?
+      This action cannot be undone.
+    </p>
+
+    <div class="confirm-actions">
+      <button type="button"
+              class="cancel-btn"
+              onclick="closeClearHistoryModal()">
+        Cancel
+      </button>
+
+      <button type="button"
+              class="confirm-clear-btn"
+              onclick="confirmClearChatHistory()">
+        🗑️ Clear History
+      </button>
     </div>
   </div>
-
+</div>
 
 <div class="design-page" id="sidePanel">
   <div class="design-topbar">
@@ -3717,15 +3750,38 @@ We'll write the ending we want to see.`,
     if (remix && remix.textContent && remix.textContent.indexOf('APK') !== -1 && pack.download_apk) remix.textContent = pack.download_apk;
     var sel = document.getElementById('setLanguage');
     if (sel) sel.value = lang;
+function initAppLanguage() {
+  applyAppLanguage(getAppLang());
+}
+function clearChatHistory() {
+  var modal = document.getElementById('clearHistoryModal');
+
+  if (modal) {
+    modal.classList.add('open');
   }
-  function changeAppLanguage(lang) {
-    applyAppLanguage(lang);
-    showToast((I18N[lang] && I18N[lang].lang_changed) || 'Language updated');
+}
+
+function closeClearHistoryModal() {
+  var modal = document.getElementById('clearHistoryModal');
+
+  if (modal) {
+    modal.classList.remove('open');
   }
-  function initAppLanguage() {
-    applyAppLanguage(getAppLang());
+}
+
+function confirmClearChatHistory() {
+  localStorage.removeItem('chatHistory');
+  localStorage.removeItem('recents');
+
+  var list = document.getElementById('recentsList');
+
+  if (list) {
+    list.innerHTML = '';
   }
 
+  closeClearHistoryModal();
+  showToast('Chat history cleared');
+ }
 function filterRecents() {
   var query = (document.getElementById('recentsSearch').value || '')
     .toLowerCase()
@@ -3745,7 +3801,6 @@ function filterRecents() {
   });
 }
 
-
 /* nav-item keyboard */
 document.addEventListener('keydown', function(e) {
   var t = e.target;
@@ -3762,7 +3817,7 @@ initAppLanguage();
 initRecents();
 updateSendState();
 renderNotifications();
-
+ 
   /* ---------- API Integration Functions ---------- */
 
   // Load Pexels stock photos as templates
