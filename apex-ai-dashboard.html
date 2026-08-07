@@ -946,21 +946,17 @@
     <div class="nav-item" role="button" tabindex="0" onclick="openDesignPage('PhotoDesign')" data-i18n="nav_photo">🖼️ Photo Design</div>
     <div class="nav-item" role="button" tabindex="0" onclick="openDesignPage('Animation Design')" data-i18n="nav_animation">🎞️ Animation Design</div>
     <div class="nav-item" onclick="openDesignPage('Music Design')" data-i18n="nav_music">🎵 Music Design</div>
+   
+<div class="nav-heading" data-i18n="nav_recents">Recents</div>
 
-    <div class="nav-heading" data-i18n="nav_recents">Recents</div>
-    <div id="recentsList">
-      <div class="recent-item" id="recent-r1" data-title="Forex Signal Pro dashboard">
-        <div class="recent-title"><span class="pin-star" style="display:none;">⭐</span>Forex Signal Pro dashboard</div>
-      </div>
-      <div class="recent-item" id="recent-r2" data-title="Image upscaling tools comparison">
-        <div class="recent-title"><span class="pin-star" style="display:none;">⭐</span>Image upscaling tools comparison</div>
-      </div>
-      <div class="recent-item" id="recent-r3" data-title="API pricing comparison">
-        <div class="recent-title"><span class="pin-star" style="display:none;">⭐</span>API pricing comparison</div>
-      </div>
-    </div>
-  </aside>
+<input type="text"
+       id="recentsSearch"
+       placeholder="Search recents..."
+       oninput="filterRecents()"
+       style="width:100%; margin:6px 0 10px; padding:8px 12px; border-radius:8px; border:1px solid #2a3355; background:#0c1220; color:#e8ecf7; font-size:13px; outline:none;">
 
+<div id="recentsList">
+</div>
   <div class="main" id="mainContent" role="main">
     <header class="topbar" role="banner">
       <button type="button" class="upgrade" onclick="openUpgradePanel()" data-i18n="upgrade" aria-label="Upgrade plan">Upgrade ›</button>
@@ -3730,21 +3726,42 @@ We'll write the ending we want to see.`,
     applyAppLanguage(getAppLang());
   }
 
+function filterRecents() {
+  var query = (document.getElementById('recentsSearch').value || '')
+    .toLowerCase()
+    .trim();
 
-  /* nav-item keyboard */
-  document.addEventListener('keydown', function(e) {
-    var t = e.target;
-    if (!t || !t.classList || !t.classList.contains('nav-item')) return;
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      t.click();
-    }
+  var items = document.querySelectorAll('#recentsList .recent-item');
+
+  items.forEach(function(item) {
+    var title = (
+      item.getAttribute('data-title') ||
+      item.textContent ||
+      ''
+    ).toLowerCase();
+
+    item.style.display =
+      (!query || title.includes(query)) ? '' : 'none';
   });
+}
 
-  initAppLanguage();
-  initRecents();
-  updateSendState();
-  renderNotifications();
+
+/* nav-item keyboard */
+document.addEventListener('keydown', function(e) {
+  var t = e.target;
+
+  if (!t || !t.classList || !t.classList.contains('nav-item')) return;
+
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    t.click();
+  }
+});
+
+initAppLanguage();
+initRecents();
+updateSendState();
+renderNotifications();
 
   /* ---------- API Integration Functions ---------- */
 
